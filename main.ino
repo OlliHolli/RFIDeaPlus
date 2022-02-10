@@ -1,6 +1,10 @@
 // Main programm for the RFIDea+ project
 #include <SPI.h>
 #include <MFRC522.h>
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+
+#include "MaltesTollerKot.h"
 
 
 // RFID reader
