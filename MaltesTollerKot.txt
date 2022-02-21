@@ -2,8 +2,10 @@
 #include <Wire.h>
 #include <SPI.h>
 #include <MFRC522.h>
+
 #define SS_PIN 53
 #define RST_PIN 5
+
 MFRC522 mfrc522(SS_PIN, RST_PIN);
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 int rot=13;
