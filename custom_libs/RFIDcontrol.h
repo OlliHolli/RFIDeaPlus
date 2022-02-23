@@ -14,4 +14,12 @@ void dumpUID(MFRC522::Uid uid);
 
 bool isMasterCard(MFRC522::Uid uid);
 
+void addRemove_tag(MFRC522::Uid uid);
+
+bool uid_equal(byte id1[], MFRC522::Uid id2);
+
+int findIndexOfTag(MFRC522::Uid uid);
+
+void removeEmptyTags(int startIndex);
+
 #endif
