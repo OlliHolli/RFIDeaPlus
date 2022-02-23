@@ -1,7 +1,7 @@
 #include <LiquidCrystal_I2C.h>
 #include <Wire.h>
 
-LiquidCrystal_I2C _lcd;
+LiquidCrystal_I2C _lcd(0,0,0);      // must be initialised as no default constructor exists
 
 void initialiseLCD(LiquidCrystal_I2C &lcd) {
     _lcd = lcd;
