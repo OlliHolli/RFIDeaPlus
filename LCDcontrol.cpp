@@ -6,7 +6,6 @@ LiquidCrystal_I2C _lcd(0,0,0);      // must be initialised as no default constru
 void initialiseLCD(LiquidCrystal_I2C &lcd) {
     _lcd = lcd;
     _lcd.init();
-    delay(1000);
     _lcd.backlight();
 }
 

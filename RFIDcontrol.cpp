@@ -14,9 +14,9 @@ void dumpUID(MFRC522::Uid uid);
 bool isMasterCard(MFRC522::Uid uid);
 void addRemove_tag(MFRC522::Uid uid);
 bool tagIsKnown(MFRC522::Uid uid);
-bool uid_equal(MFRC522::Uid id1, MFRC522::Uid id2);
-int findIndexOfTag(MFRC522::UID uid);
-void removeEmptyTags();
+bool uid_equal(byte id1[], MFRC522::Uid id2);
+int findIndexOfTag(MFRC522::Uid uid);
+void removeEmptyTags(int startIndex);
 
 
 // functions
@@ -69,29 +69,30 @@ void addRemove_tag(MFRC522::Uid uid) {
     if (tagIsKnown) {
         // remove the tag
         int index = findIndexOfTag(uid);
-        tags[index] = {};
+        // tags[index] = {};
         removeEmptyTags(index);
-        delete index;
     }
     else {
         // add the tag
-        tags[nr_tags - 1] = uid.uidByte;
+        for (int i = 0; i < 4; i++) {
+            tags[nr_tags - 1][i] = int(uid.uidByte[i]);
+        }
         nr_tags++;
     }
 }
 
 bool tagIsKnown(MFRC522::Uid uid) {
-    for (byte[] tag : tags) {
-        if (uid_equal(tag, uid)) {
+    for (auto rfid_tag : tags) {
+        if (uid_equal(rfid_tag, uid)) {
             return true;
         }
     }
     return false;
 }
 
-bool uid_equal(byte[] id1, MFRC522::Uid id2) {
-    if (id1.size == id2.size) {
-        for (int i = 0; i < id1.size; i++) {
+bool uid_equal(byte id1[], MFRC522::Uid id2) {
+    if (sizeof(id1) == id2.size) {
+        for (int i = 0; i < sizeof(id1); i++) {
             if (int(id1[i]) != int(id2.uidByte[i])) {
                 return false;
             }
@@ -106,7 +107,7 @@ bool uid_equal(byte[] id1, MFRC522::Uid id2) {
 
 int findIndexOfTag(MFRC522::Uid uid) {
     for (int i = 0; i < nr_tags; i++) {
-        if (uid_equal(tags[i]), uid) {
+        if (uid_equal(tags[i], uid)) {
             return i;
         }
     }
@@ -116,9 +117,14 @@ int findIndexOfTag(MFRC522::Uid uid) {
 
 void removeEmptyTags(int startIndex) {
     for (int i = startIndex; i < Max_Tags - 1; i++) {
-        if (tags[i + 1] != {}) {
-            tags[i] = tags[i + 1];
-            tags[i + 1] = {};
+        byte comp[4] = {-1, -1, -1, -1};
+        if (tags[i + 1] != comp) {
+            for (int j = 0; j < 4; j++) {
+                tags[i][j] = tags[i + 1][j];
+            }
+            for (int j = 0; j < 4; j++) {
+                tags[i+1][j] = -1;
+            }
         }
         else {
             return;

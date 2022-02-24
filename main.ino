@@ -1,6 +1,6 @@
 // Main program for the RFIDea+ project
 #include <SPI.h>
-#include "custom_libs/RFIDea.h"
+#include "./custom_libs/RFIDea.h"
 
 RFIDea rfidea;
 
