@@ -9,6 +9,12 @@
 // RFID reader
 #define RST_Pin 5
 
+/*
+!!! Required PIN Layout - Cannot be changed !!!
+SCK - 52
+MOSI - 51
+MISO - 50
+*/
 #define SDA_Pin_1 53
 #define SDA_Pin_2 25
 
@@ -22,6 +28,10 @@ class RFIDea {
         void toggleEditorMode();
 
         void initialise();
+
+        void read();
+
+        bool arrIsEmpty(byte** arr);
 
     private:
         bool editormode;

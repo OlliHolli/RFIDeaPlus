@@ -1,6 +1,7 @@
 #include <MFRC522.h>
 
 #include "custom_libs/ReaderCount.h"
+#include "custom_libs/RFIDcontrol.h"
 
 #define Max_Tags 100
 
@@ -9,40 +10,29 @@ byte tags[Max_Tags][4];
 bool access = false;
 unsigned int nr_tags = 0;
 
-// forward declaration
-void dumpUID(MFRC522::Uid uid);
-bool isMasterCard(MFRC522::Uid uid);
-void addRemove_tag(MFRC522::Uid uid);
-bool tagIsKnown(MFRC522::Uid uid);
-bool uid_equal(byte id1[], MFRC522::Uid id2);
-int findIndexOfTag(MFRC522::Uid uid);
-void removeEmptyTags(int startIndex);
-
 
 // functions
 void initialiseReaders(MFRC522 (&readers)[NR_Readers], byte pins[], byte reset, int nr_readers) {
     // readers will always be a reference to an array
     for (int i = 0; i < nr_readers; i++) {
         readers[i].PCD_Init(pins[i], reset);
+        readers[i].PCD_DumpVersionToSerial();
     }
 }
 
-void rfid_read(MFRC522 (&readers)[NR_Readers]) {
+byte** rfid_read(MFRC522 (&readers)[NR_Readers]) {
+    byte** res = 0;
     for (int i = 0; i < NR_Readers; i++) {
         if (readers[i].PICC_IsNewCardPresent()) {
-            Serial.println("There is a card on reader " + (i + 1));
-            if (readers[i].PICC_ReadCardSerial()) {
-                if (isMasterCard(readers[i].uid)) {
-                    Serial.println("Yes Master?");
-                }
-                else {
-                    Serial.print("Chip ID: ");
-                    dumpUID(readers[i].uid);
-                    Serial.println();
-                }
+            Serial.println(String("There is a card on reader " + (i + 1)));
+            for (int j = 0; j < 4; j++) {
+                res[i][j] = readers[i].uid.uidByte[j];
+                Serial.println(res[i][j]);
             }
         }
     }
+
+    return res;
 }
 
 void dumpUID(MFRC522::Uid uid) {
@@ -61,16 +51,16 @@ bool isMasterCard(MFRC522::Uid uid) {
         }
     }
 
-    Serial.println("Master card present");
+    Serial.println("Master card present!");
     return true;
 }
 
-void addRemove_tag(MFRC522::Uid uid) {
+int addRemove_tag(MFRC522::Uid uid) {
     if (tagIsKnown) {
         // remove the tag
         int index = findIndexOfTag(uid);
-        // tags[index] = {};
         removeEmptyTags(index);
+        return -1;      // remove code
     }
     else {
         // add the tag
@@ -78,6 +68,7 @@ void addRemove_tag(MFRC522::Uid uid) {
             tags[nr_tags - 1][i] = int(uid.uidByte[i]);
         }
         nr_tags++;
+        return 1;       // add code
     }
 }
 
@@ -90,7 +81,7 @@ bool tagIsKnown(MFRC522::Uid uid) {
     return false;
 }
 
-bool uid_equal(byte id1[], MFRC522::Uid id2) {
+bool uid_equal(byte* id1, MFRC522::Uid id2) {
     if (sizeof(id1) == id2.size) {
         for (int i = 0; i < sizeof(id1); i++) {
             if (int(id1[i]) != int(id2.uidByte[i])) {
@@ -117,7 +108,7 @@ int findIndexOfTag(MFRC522::Uid uid) {
 
 void removeEmptyTags(int startIndex) {
     for (int i = startIndex; i < Max_Tags - 1; i++) {
-        byte comp[4] = {-1, -1, -1, -1};
+        byte comp[4] = {0, 0, 0, 0};
         if (tags[i + 1] != comp) {
             for (int j = 0; j < 4; j++) {
                 tags[i][j] = tags[i + 1][j];
