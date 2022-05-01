@@ -8,7 +8,6 @@
 
 // RFID reader
 #define RST_Pin 5
-
 /*
 !!! Required PIN Layout - Cannot be changed !!!
 SCK - 52
@@ -31,9 +30,8 @@ class RFIDea {
 
         void read();
 
-        bool arrIsEmpty(byte** arr);
-
     private:
+        int mastercardReader;
         bool editormode;
         byte sda_pins[NR_Readers] = {SDA_Pin_1, SDA_Pin_2};
         MFRC522 rfid_readers[NR_Readers];       // NR_Readers is defined in ReaderCount.h
