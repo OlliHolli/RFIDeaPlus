@@ -2,10 +2,13 @@
 #define __LCDCONTROL__
 
 #include <LiquidCrystal_I2C.h>
+#include <MFRC522.h>
 
 void initialiseLCD(LiquidCrystal_I2C &lcd);
-void writeToLCD(uint8_t text);
-void writeTOLCD(uint8_t text, int x, int y);
+void writeToLCD(const char* str);
+void writeToLCD(const char* str, int x, int y);
+void writeToLCD(MFRC522::Uid uid);
 void clearLCD();
+void clearLine(int line);
 
 #endif

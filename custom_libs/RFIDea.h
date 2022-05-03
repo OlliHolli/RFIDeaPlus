@@ -33,6 +33,7 @@ class RFIDea {
     private:
         int mastercardReader;
         bool editormode;
+        bool editorMessage;
         byte sda_pins[NR_Readers] = {SDA_Pin_1, SDA_Pin_2};
         MFRC522 rfid_readers[NR_Readers];       // NR_Readers is defined in ReaderCount.h
 };

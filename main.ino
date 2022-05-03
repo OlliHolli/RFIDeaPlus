@@ -10,7 +10,6 @@ void setup() {
     Serial.println("Starting...");
 
     rfidea.initialise();
-    delay(1000);        // safe delay to make sure initialisation is finished before usage
     Serial.println("Running...");
 }
 
